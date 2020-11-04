@@ -52,9 +52,9 @@ days_to_plot <- min_days_to_plot:max_days_to_plot
 
 
 df.bar <-barplot(precip_extended_winter[days_to_plot],
-                 col="blue", main = "winter 1993/1994")
+                 col="lightblue", main = "winter 1993/1994 (November to March)")
 abline(h=quantile_75, lty=3, lwd=1)
-points(x = df.bar, y=Events_75[days_to_plot]*quantile_75, pch="+", col="red", lwd=4)
+points(x = df.bar, y=Events_75[days_to_plot]*quantile_75, pch="+", col="red", cex=1.5)
 
 
 
