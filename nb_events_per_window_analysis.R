@@ -174,7 +174,7 @@ legend("bottomright",title="Log-likelihood",
 
 
 
-# ##### Select randomly the windows #####
+# ##### Alternative definition: select randomly the windows #####
 # 
 # #function to extract the number of events in a random window of fixed size for a fix year
 # nb_events_random_window <- function(list_precip_winter, year, years_fullwinter, size_window){
