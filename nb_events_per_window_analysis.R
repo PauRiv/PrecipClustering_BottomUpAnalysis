@@ -130,7 +130,7 @@ for (ind_yr in 1:length(years_fullwinter)) {
 
 
 
-plot(ecdf(nb_evts_30))
+plot(ecdf(nb_evts_30), main="ECDF nb of events per 30d window\n(November to March)")
 Fit_poiss <- MASS::fitdistr(nb_evts_30, densfun = "Poisson")
 lines(0:12, ppois(0:12, lambda = Fit_poiss$estimate), col="chartreuse4")
 #ks.test(x = nb_evts_30+rnorm(n=5*length(years_fullwinter),sd=0.00003), y = "ppois", lambda = Fit_poiss$estimate)
@@ -156,7 +156,7 @@ legend("bottomright",title="Log-likelihood",
        text.col=c("chartreuse4", "blue", "orange", "red"))
 
 
-plot(ecdf(nb_evts_60))
+plot(ecdf(nb_evts_60), main="ECDF nb of events per 60d window\n(October to March)")
 Fit_poiss <- MASS::fitdistr(nb_evts_60, densfun = "Poisson")
 lines(0:16, ppois(0:16, lambda = Fit_poiss$estimate), col="chartreuse4")
 #ks.test(x = nb_evts_60+rnorm(n=2*length(years_fullwinter),sd=0.00003), y = "ppois", lambda = Fit_poiss$estimate)
@@ -181,7 +181,7 @@ legend("bottomright",title="Log-likelihood",
                   paste(round(Fit_negabino_60$loglik,2), "    Negative binomial")),
        text.col=c("chartreuse4", "blue", "orange", "red"))
 
-plot(ecdf(nb_evts_90))
+plot(ecdf(nb_evts_90), main="ECDF nb of events per 90d window\n(October to March)")
 Fit_poiss <- MASS::fitdistr(nb_evts_90, densfun = "Poisson")
 lines(0:20,ppois(0:20, lambda = Fit_poiss$estimate), col="chartreuse4")
 #ks.test(x = nb_evts_90+rnorm(n=length(years_fullwinter),sd=0.00003), y = "ppois", lambda = Fit_poiss$estimate)
