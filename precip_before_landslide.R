@@ -83,20 +83,20 @@ plot(nb_events_30,cumul_precip_30)
  
 load("Fit/Fit_negative_binomial.Rdata")
 
-plot(ecdf(nb_events_30))
+plot(ecdf(nb_events_30), main="(E)CDF nb of events per 30d window")
 lines(0:12,pnbinom(0:12, size = Fit_neg_bino$fit_w30$estimate["size"], mu = Fit_neg_bino$fit_w30$estimate["mu"]), col="red")
 legend("bottomright",
-       legend = c("30-wind. before landslide", "30-wind. anytime in winter"),
+       legend = c("Before landslide (ECDF)", "Anytime in winter\n (CDF, fitted neg.binom)"),
        text.col=c("black", "red"))
 
-plot(ecdf(nb_events_60))
+plot(ecdf(nb_events_60), main="(E)CDF nb of events per 60d window")
 lines(0:20,pnbinom(0:20, size = Fit_neg_bino$fit_w60$estimate["size"], mu = Fit_neg_bino$fit_w60$estimate["mu"]), col="red")
 legend("bottomright",
-       legend = c("60-wind. before landslide", "60-wind. anytime in winter"),
+       legend = c("Before landslide (ECDF)", "Anytime in winter\n (CDF, fitted neg.binom)"),
        text.col=c("black", "red"))
 
-plot(ecdf(nb_events_90))
+plot(ecdf(nb_events_90), main="(E)CDF nb of events per 90d window")
 lines(0:22,pnbinom(0:22, size = Fit_neg_bino$fit_w60$estimate["size"], mu = Fit_neg_bino$fit_w60$estimate["mu"]), col="red")
 legend("bottomright",
-       legend = c("90-wind. before landslide", "90-wind. anytime in winter"),
+       legend = c("Before landslide (ECDF)", "Anytime in winter\n (CDF, fitted neg.binom)"),
        text.col=c("black", "red"))
