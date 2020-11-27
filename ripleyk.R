@@ -1,5 +1,6 @@
 ## The Ripley's K function adapted for one dimension
 ## Clément Chevalier - 2014-02-01
+## Pauline Rivoire - 27-11-2020
 
 RipleyK <- function( Listvectors, size , xvect  ){
   
@@ -58,10 +59,14 @@ SimuRipleyK <- function(nsimu, xvect, size , yearsize, n.events.avg ){
   result1 <- matrix(c(0),nrow=nsimu,ncol=length(xvect))
   
   for(i in 1:nsimu){
+#    print(paste("simu",i,"out of",nsimu))
     Listvectors <- list()
     for(j in 1:size) Listvectors[[j]] <- rbinom(n=yearsize[j],size=1,prob=proba)
-    ripleyk <- RipleyK(Listvectors=Listvectors,size=size,xvect=xvect)
-    result1[i,] <- ripleyk
+    for (tw in 1:length(xvect)) { #Modif 3 lines
+      TW <- xvect[tw]
+      result1[i,tw] <- RipleyK(Listvectors=Listvectors,size=size,xvect=TW)[1]
+    }#end for tw
+    
   }
   
   result.avg <- apply(X=result1,MARGIN=2,FUN=mean)
@@ -76,20 +81,20 @@ SimuRipleyK <- function(nsimu, xvect, size , yearsize, n.events.avg ){
 ### RIPLEY'S K EXAMPLE OF USE ###
 #################################
 
-mydata <- list()
-for(i in 1:40) mydata[[i]] <- rbinom(n=91,size=1,prob=0.04)
-Listvectors <- mydata
-size <- 40 #number of year
-xvect <- c(1:91) #One season
-
-y <- RipleyK(Listvectors=Listvectors,size=size,xvect=xvect)
-
-obj <- SimuRipleyK(nsimu=1000,xvect=xvect,size=40,yearsize=rep(91,times=40),n.events.avg=140)
-
-plot(x=xvect,y=y,type="l",ylab="Ripley",lwd=3,ylim=c(0,5),xlab="days")
-lines(x=xvect,y=obj$avg,col="red")
-lines(x=xvect,y=obj$lower,col="grey",lty=2)
-lines(x=xvect,y=obj$upper,col="grey",lty=2)
+# mydata <- list()
+# for(i in 1:40) mydata[[i]] <- rbinom(n=91,size=1,prob=0.04)
+# Listvectors <- mydata
+# size <- 40 #number of year
+# xvect <- c(1:91) #One season
+# 
+# y <- RipleyK(Listvectors=Listvectors,size=size,xvect=xvect)
+# 
+# obj <- SimuRipleyK(nsimu=1000,xvect=xvect,size=40,yearsize=rep(91,times=40),n.events.avg=140)
+# 
+# plot(x=xvect,y=y,type="l",ylab="Ripley",lwd=3,ylim=c(0,5),xlab="days")
+# lines(x=xvect,y=obj$avg,col="red")
+# lines(x=xvect,y=obj$lower,col="grey",lty=2)
+# lines(x=xvect,y=obj$upper,col="grey",lty=2)
 
 # mydata <- list()
 # mydata[[1]] <- rbinom(n=18262,size=1,prob=0.01)
