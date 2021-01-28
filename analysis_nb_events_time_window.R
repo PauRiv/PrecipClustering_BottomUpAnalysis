@@ -8,6 +8,7 @@ excel_landslides <- readxl::read_xlsx(path = "../PrecipClustering_BottomUpAnalys
 
 dates_landslides <- as.matrix(excel_landslides)
 
+dates_landslides <- rbind("1958-12-19", dates_landslides)
 #Load the data, change the path if necessary
 excel_precip<-readxl::read_xlsx(path = "Data/Precipitation_data_1950_2008_IB02.xlsx")
 
@@ -30,11 +31,12 @@ for (ls in 1:length(dates_landslides)) {
 ##### Mean number events before landslide #####
 
 
-mean_number_events_before_landslide <- matrix(data=NA, nrow = length((15:90)), ncol = 1) #time window length: 15:90
-rownames(mean_number_events_before_landslide) <- as.character((15:90))
+mean_number_events_before_landslide <- matrix(data=NA, nrow = length((2:90)), ncol = 1) #time window length: 2:90
+number_events_before_landslide <- matrix(data=NA, nrow = length((2:90)), ncol = 23)
+rownames(mean_number_events_before_landslide) <- as.character((2:90))
 quantile_75 <- 10.5
-for (t_w in 1:length((15:90))) {
-  w_length <- (15:90)[t_w]
+for (t_w in 1:length((2:90))) {
+  w_length <- (2:90)[t_w]
   
   precip_w_before <- matrix(data = NA, nrow = w_length, ncol = length(ref_date_ls))
   events_w_before <- matrix(data = NA, nrow = w_length, ncol = length(ref_date_ls))
@@ -50,6 +52,7 @@ for (t_w in 1:length((15:90))) {
       if(gt_1_nocorr[day-1] == 1 & gt_1_nocorr[day] == 1){gt_1_nocorr[day] <- 0}
     }#end for day
     events_w_before[,ls] <- gt_1_nocorr
+    number_events_before_landslide[t_w,ls] <- sum(gt_1_nocorr)
   }#end for ls
   
   nb_events_w <- apply(X=events_w_before, MARGIN = 2, FUN = sum)
@@ -184,13 +187,13 @@ sample_nb_events_per_window <- function(list_precip_winter, years_fullwinter, si
 
 quantile_75 <- 10.5
 nyears_per_simu <- length(dates_landslides)
-MC_mean_nb_ev_subsamp <- matrix(data = NA, nrow = nsimu, ncol = length((15:90)))
-colnames(MC_mean_nb_ev_subsamp) <- as.character((15:90))
+MC_mean_nb_ev_subsamp <- matrix(data = NA, nrow = nsimu, ncol = length((2:90)))
+colnames(MC_mean_nb_ev_subsamp) <- as.character((2:90))
 
 for (simu in 1:nsimu) {
   
-  for (t_w in 1:length((15:90))) {
-    w_length <- (15:90)[t_w]
+  for (t_w in 1:length((2:90))) {
+    w_length <- (2:90)[t_w]
     
     
     MC_mean_nb_ev_subsamp[simu,t_w] <- mean(sample_nb_events_per_window(list_precip_winter = list_precip_winter,
@@ -200,16 +203,47 @@ for (simu in 1:nsimu) {
   }#end for t_w
   
 } #end for simu
+
+nsimu2 <- 10000
+
+MC_nb_ev_subsamp <- matrix(data = NA, nrow = nsimu2, ncol = length((2:90)))
+colnames(MC_nb_ev_subsamp) <- as.character((2:90))
+
+  for (t_w in 1:length((2:90))) {
+    w_length <- (2:90)[t_w]
+    
+    
+    MC_nb_ev_subsamp[,t_w] <- sample_nb_events_per_window(list_precip_winter = list_precip_winter,
+                                                                        years_fullwinter = years_fullwinter,
+                                                                        size_window = w_length,
+                                                                        sample_size = nsimu2)
+  }#end for t_w
+
 boxplot(MC_mean_nb_ev_subsamp[,c("30", "60", "90")])
 low_quantile <- apply(X=MC_mean_nb_ev_subsamp, MARGIN = 2,FUN = quantile, probs=0.025)
 up_quantile <- apply(X=MC_mean_nb_ev_subsamp, MARGIN = 2,FUN = quantile, probs=0.975)
 
-plot(15:90,mean_number_events_before_landslide, pch="+", xlab="window length", ylim = c(0,12),
-     ylab = "mean number of events", main = "Bootstrap number of events per time window\n(1000 repet., 22 winds chosen randomly in all winters)")
-polygon(c(15:90,rev(15:90)),c(up_quantile,rev(low_quantile)),col="thistle",border=NA)
+plot(2:90,mean_number_events_before_landslide, pch="+", xlab="window length", ylim = c(0,12),
+     ylab = "mean number of events", main = "Bootstrap number of events per time window\n(1000 repet., 23 winds chosen randomly in all winters)")
+polygon(c(2:90,rev(2:90)),c(up_quantile,rev(low_quantile)),col="thistle",border=NA)
 legend("bottomright", legend = c("before a landslide", "95%CI"), pch=c(3,15), col=c("black", "thistle"))
 
+win_critical_duration <- c(10,10,1,30,15,75,5,1,1,15,15,30,40,60,75,40,90,60,60,4,10,40,1)
+low_quantile2 <- apply(X=MC_nb_ev_subsamp, MARGIN = 2,FUN = quantile, probs=0.05)
+up_quantile2 <- apply(X=MC_nb_ev_subsamp, MARGIN = 2,FUN = quantile, probs=0.95)
 
+for (ls in 1:23) {
+  png(paste0("../PrecipClustering_BottomUpAnalysis_LOCAL/nb_events_before_landslide_",dates_landslides[ls],".png"))
+  plot(2:90,number_events_before_landslide[,ls], pch="+", xlab="window before event",
+       ylim = c(0,max(number_events_before_landslide[,ls],12)),
+       ylab = "Number of days precip>75th perc", main = paste("Lanslide", dates_landslides[ls]))
+  polygon(c(2:90,rev(2:90)),c(up_quantile,rev(low_quantile)),col="thistle",border=NA)
+  legend("bottomright", legend = c("before the landslide", "95%CI mean in winter","critical duration in data"),
+         pch=c(3,15,NA), col=c("black", "thistle", "black"), lty=c(NA,NA,2))
+  points(2:90,number_events_before_landslide[,ls], pch="+")
+  abline(v=win_critical_duration[ls], lty=2)
+  dev.off()
+}#end for ls
 
 
 
